@@ -3,8 +3,7 @@
 use App\Http\Controllers\Admin\RolesController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\UsersController;
-
-
+use App\Http\Controllers\ClassController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -25,3 +24,9 @@ Route::get('roles/{id}/edit', [RolesController::class,  'edit'])->name('roles.ed
 Route::put('roles/{id}', [RolesController::class,  'update'])->name('roles.update');
 Route::delete('roles/{id}', [RolesController::class, 'destroy'])->name('roles.destroy');
 
+Route::get('class', [ClassController::class, 'index'])->name('class.index');
+Route::get('class/create', [ClassController::class, 'create'])->name('class.create');
+Route::post('class/store', [ClassController::class, 'store'])->name('class.store');
+Route::get('class/{id}/edit', [ClassController::class, 'edit'])->name('class.edit');
+Route::put('class/{id}', [ClassController::class, 'update'])->name('class.update');
+Route::delete('class/{id}', [ClassController::class, 'destroy'])->name('class.destroy');

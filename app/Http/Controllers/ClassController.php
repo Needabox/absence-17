@@ -25,11 +25,15 @@ class ClassController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'homeroom_teacher_id' => 'required|exists:users,id',
+            'semester' => 'required',
+            'year' => 'required',
         ]);
 
         Clas::create([
             'name' => $request->name,
             'homeroom_teacher_id' => $request->homeroom_teacher_id,
+            'semester' => $request->semester,
+            'year' => $request->year,
         ]);
 
         return redirect()->route('class.index')->with('success', 'Class created successfully.');
@@ -47,12 +51,16 @@ class ClassController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'homeroom_teacher_id' => 'required|exists:users,id',
+            'semester' => 'required',
+            'year' => 'required',
         ]);
 
         $class = Clas::findOrFail($id);
         $class->update([
             'name' => $request->name,
             'homeroom_teacher_id' => $request->homeroom_teacher_id,
+            'semester' => $request->semester,
+            'year' => $request->year,
         ]);
         return redirect()->route('class.index')->with('success', 'Class updated successfully.');
     }

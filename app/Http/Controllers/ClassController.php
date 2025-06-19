@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Clas;
+use App\Models\Classes;
+use App\Models\ClassStudent;
+use App\Models\Student;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -10,7 +12,7 @@ class ClassController extends Controller
 {
     public function index()
     {
-        $classes = Clas::with('homeroomTeacher')->get();
+        $classes = Classes::with('homeroomTeacher')->get();
         return view('admin.class.index', compact('classes'));
     }
 
@@ -25,50 +27,74 @@ class ClassController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'homeroom_teacher_id' => 'required|exists:users,id',
-            'semester' => 'required',
-            'year' => 'required',
+            'semester' => 'required|string|max:20',
+            'year' => 'required|string|max:10',
+            'class_chief' => 'required|string|max:255',
+            'status' => 'required|in:0,1',
         ]);
 
-        Clas::create([
+        Classes::create([
             'name' => $request->name,
             'homeroom_teacher_id' => $request->homeroom_teacher_id,
             'semester' => $request->semester,
             'year' => $request->year,
+            'class_chief' => $request->class_chief,
+            'status' => $request->status,
         ]);
 
         return redirect()->route('class.index')->with('success', 'Class created successfully.');
     }
 
-    public function edit($id)
-    {
-        $class = Clas::findOrFail($id);
-        $teachers = User::where('role_id', 2)->get();
-        return view('admin.class.edit', compact('class', 'teachers'));
-    }
+  public function edit($id)
+{
+    $class = Classes::findOrFail($id);
+
+    // Ambil semua guru dengan role_id = 2
+    $teachers = User::where('role_id', 2)->get();
+
+    // Ambil semua siswa yang sudah masuk ke kelas ini
+    $classStudents = ClassStudent::with('student')->where('class_id', $id)->get();
+
+    // Ambil semua student_id yang sudah punya kelas (class_student)
+    $studentWithClass = ClassStudent::pluck('student_id');
+
+    // Ambil siswa yang belum punya kelas
+    $students = Student::whereNotIn('id', $studentWithClass)->get();
+
+    return view('admin.class.edit', compact('class', 'teachers', 'classStudents', 'students'));
+}
+
+
 
     public function update(Request $request, $id)
     {
         $request->validate([
             'name' => 'required|string|max:255',
             'homeroom_teacher_id' => 'required|exists:users,id',
-            'semester' => 'required',
-            'year' => 'required',
+            'semester' => 'required|string|max:20',
+            'year' => 'required|string|max:10',
+            'class_chief' => 'required|string|max:255',
+            'status' => 'required|in:0,1',
         ]);
 
-        $class = Clas::findOrFail($id);
+        $class = Classes::findOrFail($id);
         $class->update([
             'name' => $request->name,
             'homeroom_teacher_id' => $request->homeroom_teacher_id,
             'semester' => $request->semester,
             'year' => $request->year,
+            'class_chief' => $request->class_chief,
+            'status' => $request->status,
         ]);
+
         return redirect()->route('class.index')->with('success', 'Class updated successfully.');
     }
 
     public function destroy($id)
     {
-        $class = Clas::findOrFail($id);
+        $class = Classes::findOrFail($id);
         $class->delete();
-        return redirect()->route('class.index')->with('success', 'deleted successfully.');
+
+        return redirect()->route('class.index')->with('success', 'Class deleted successfully.');
     }
 }

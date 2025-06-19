@@ -53,6 +53,9 @@ class RolesController extends Controller
 
     public function destroy(string $id)
     {
+        if (in_array($id, [1, 2, 3])) {
+            return redirect()->back()->with('error', 'This role cannot be deleted.');
+        }
         $role = Role::find($id);
         $role->delete();
 

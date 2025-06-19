@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 
 use App\Http\Controllers\Controller;
+use App\Models\Classes;
 
 class UsersController extends Controller
 {
@@ -28,31 +29,40 @@ class UsersController extends Controller
     public function create()
     {
         $roles = Role::all();
-        return view('admin.users.create', compact('roles'));
+        $class = Classes::all();
+        return view('admin.users.create', compact('roles', 'class'));
     }
 
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        $request->validate([
-            'name' => 'required',
-            'email' => 'required|email|unique:users',
-            'role_id' => 'required',
+{
+    $request->validate([
+        'name' => 'required',
+        'email' => 'required|email|unique:users',
+        'role_id' => 'required',
+        'password' => 'required|min:8',
+        'class_id' => 'nullable'
+    ]);
+
+    $user = new User();
+    $user->name = $request->name;
+    $user->email = $request->email;
+    $user->password = bcrypt($request->password);
+    $user->role_id = $request->role_id;
+    $user->save();
+
+    if ($request->class_id) {
+        \App\Models\UserClass::create([
+            'user_id' => $user->id,
+            'class_id' => $request->class_id,
         ]);
-
-        // dd($request->all());
-
-        $user = new User();
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->password = bcrypt($request->password);
-        $user->role_id = $request->role_id;
-        $user->save();
-
-        return redirect()->route('users.index')->with('success', 'User created successfully.');
     }
+
+    return redirect()->route('users.index')->with('success', 'User created successfully.');
+}
+
 
     /**
      * Display the specified resource.

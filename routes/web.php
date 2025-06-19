@@ -1,32 +1,45 @@
 <?php
 
-use App\Http\Controllers\Admin\RolesController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\UsersController;
+use App\Http\Controllers\Admin\RolesController;
+use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClassController;
+use App\Http\Controllers\ClassStudentController;
+use App\Http\Controllers\MajorController;
+use App\Http\Controllers\StudentController;
 
 Route::get('/', function () {
     return view('welcome');
 });
+Route::get('/login', [AuthController::class, 'login'])->name('login');
+Route::post('/verify', [AuthController::class, 'verify'])->name('verify');
+Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::get('users', [UsersController::class, 'index'])->name('users.index');
-Route::get('users/create', [UsersController::class, 'create'])->name('users.create');
-Route::post('users/store', [UsersController::class, 'store'])->name('users.store');
-Route::get('users/{id}', [UsersController::class, 'show'])->name('users.show');
-Route::get('users/{id}/edit', [UsersController::class, 'edit'])->name('users.edit');
-Route::put('users/{id}', [UsersController::class, 'update'])->name('users.update');
-Route::delete('users/{id}', [UsersController::class, 'destroy'])->name('users.destroy');
+// Admin Routes
+Route::middleware(['auth', 'role:1'])->group(function () {
+    Route::resource('users', UsersController::class);
+    Route::resource('roles', RolesController::class);
+    Route::resource('class', ClassController::class);
+    Route::resource('majors', MajorController::class);
+    Route::resource('students', StudentController::class);
 
-Route::get('roles', [RolesController::class,  'index'])->name('roles.index');
-Route::get('roles/create', [RolesController::class,  'create'])->name('roles.create');
-Route::post('roles/store', [RolesController::class,  'store'])->name('roles.store');
-Route::get('roles/{id}/edit', [RolesController::class,  'edit'])->name('roles.edit');
-Route::put('roles/{id}', [RolesController::class,  'update'])->name('roles.update');
-Route::delete('roles/{id}', [RolesController::class, 'destroy'])->name('roles.destroy');
+    Route::post('/class-student', [ClassStudentController::class, 'store'])->name('class-student.store');
+    Route::delete('/class-student/{class}/{student}', [ClassStudentController::class, 'destroy'])->name('class-student.destroy');
+});
 
-Route::get('class', [ClassController::class, 'index'])->name('class.index');
-Route::get('class/create', [ClassController::class, 'create'])->name('class.create');
-Route::post('class/store', [ClassController::class, 'store'])->name('class.store');
-Route::get('class/{id}/edit', [ClassController::class, 'edit'])->name('class.edit');
-Route::put('class/{id}', [ClassController::class, 'update'])->name('class.update');
-Route::delete('class/{id}', [ClassController::class, 'destroy'])->name('class.destroy');
+// Kasir Routes
+Route::middleware(['auth', 'role:2'])->group(function () {
+    Route::resource('class', ClassController::class);
+    Route::resource('students', StudentController::class);
+
+    Route::post('/class-student', [ClassStudentController::class, 'store'])->name('class-student.store');
+    Route::delete('/class-student/{class}/{student}', [ClassStudentController::class, 'destroy'])->name('class-student.destroy');
+});
+
+Route::middleware(['auth', 'role:3'])->group(function () {
+   
+    Route::resource('absen', AttendanceController::class);
+
+});

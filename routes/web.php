@@ -18,28 +18,28 @@ Route::post('/verify', [AuthController::class, 'verify'])->name('verify');
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // Admin Routes
-Route::middleware(['auth', 'role:1'])->group(function () {
-    Route::resource('users', UsersController::class);
-    Route::resource('roles', RolesController::class);
-    Route::resource('class', ClassController::class);
-    Route::resource('majors', MajorController::class);
-    Route::resource('students', StudentController::class);
+Route::prefix('cms')->group(function() {
+    Route::middleware(['auth', 'role:'.App\Models\Role::ADMIN])->group(function () {
+        Route::resource('users', UsersController::class);
+        Route::resource('roles', RolesController::class);
+        Route::resource('class', ClassController::class);
+        Route::resource('majors', MajorController::class);
+        Route::resource('students', StudentController::class);
 
-    Route::post('/class-student', [ClassStudentController::class, 'store'])->name('class-student.store');
-    Route::delete('/class-student/{class}/{student}', [ClassStudentController::class, 'destroy'])->name('class-student.destroy');
-});
+        Route::post('/class-student', [ClassStudentController::class, 'store'])->name('class-student.store');
+        Route::delete('/class-student/{class}/{student}', [ClassStudentController::class, 'destroy'])->name('class-student.destroy');
+    });
 
-// Kasir Routes
-Route::middleware(['auth', 'role:2'])->group(function () {
-    Route::resource('class', ClassController::class);
-    Route::resource('students', StudentController::class);
+    // Guru Routes
+    Route::middleware(['auth', 'role:'.App\Models\Role::GURU])->group(function () {
+        Route::resource('class', ClassController::class);
+        Route::resource('students', StudentController::class);
 
-    Route::post('/class-student', [ClassStudentController::class, 'store'])->name('class-student.store');
-    Route::delete('/class-student/{class}/{student}', [ClassStudentController::class, 'destroy'])->name('class-student.destroy');
-});
+        Route::post('/class-student', [ClassStudentController::class, 'store'])->name('class-student.store');
+        Route::delete('/class-student/{class}/{student}', [ClassStudentController::class, 'destroy'])->name('class-student.destroy');
+    });
 
-Route::middleware(['auth', 'role:3'])->group(function () {
-   
-    Route::resource('absen', AttendanceController::class);
-
+    Route::middleware(['auth', 'role:'.App\Models\Role::KETUA_KELAS])->group(function () {
+        Route::resource('absen', AttendanceController::class);
+    });
 });

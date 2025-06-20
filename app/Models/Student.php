@@ -9,27 +9,18 @@ class Student extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'name',
-        'gender',
-        'nis',
-        'nisn',
-        'major_id',
-        'status',
-    ];
+    protected $fillable = ['name', 'gender', 'nis', 'nisn', 'major_id', 'status'];
 
     public function major()
     {
         return $this->belongsTo(Major::class);
     }
-  public function classes()
-{
-    return $this->belongsToMany(Classes::class, 'class_student')
-                ->withTimestamps();
-}
+    public function classes()
+    {
+        return $this->belongsToMany(Classes::class, 'class_student')->withTimestamps();
+    }
     public function attendances()
     {
         return $this->hasMany(Attendance::class);
     }
-
 }

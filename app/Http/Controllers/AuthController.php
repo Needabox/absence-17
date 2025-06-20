@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Role;
 
 class AuthController extends Controller
 {
@@ -12,12 +13,12 @@ class AuthController extends Controller
         if (Auth::check()) {
             // Sudah login, arahkan sesuai role
             $user = Auth::user();
-            if ($user->role_id == 1) {
-                return redirect('/users');
-            } elseif ($user->role_id == 2) {
-                return redirect('/class');
+            if ($user->role_id == Role::ADMIN) {
+                return redirect()->route('users.index');
+            } elseif ($user->role_id == Role::GURU) {
+                return redirect()->route('class.index');
             } elseif ($user->role_id == 3) {
-                return redirect('/absene');
+                return redirect()->route('absen.index');
             }
         }
 

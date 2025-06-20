@@ -23,35 +23,10 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
 
-        Role::create([
-            'name' => 'Admin',
-        ]);
-        Role::create([
-            'name' => 'Guru',
-        ]);
-        Role::create([
-            'name' => 'Ketua Kelas'
-        ]);
-        User::create([
-            'name' => 'admin',
-            'email' => 'admin@gmail.com',
-            'password' => bcrypt('admin12345'),
-            'role_id' => 1
-        ]);
-        User::create([
-            'name' => 'guru',
-            'email' => 'guru@gmail.com',
-            'password' => bcrypt('guru12345'),
-            'role_id' => 1
-        ]);
-        User::create([
-            'name' => 'dafa',
-            'email' => 'dafa@gmail.com',
-            'password' => bcrypt('dafa12345'),
-            'role_id' => 1
-        ]);
-        Major::create([
-            'name' => 'Rekayasa Perangkat Lunak'
+        $this->call([
+            RoleSeeder::class,
+            UserSeeder::class,
+            MajorSeeder::class,
         ]);
     }
 }

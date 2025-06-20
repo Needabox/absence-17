@@ -9,7 +9,7 @@ use App\Models\UserClass;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-
+use Illuminate\Support\Facades\DB;
 class AttendanceController extends Controller
 {
     /**
@@ -28,7 +28,7 @@ class AttendanceController extends Controller
         $today = now()->toDateString();
 
         // Cek apakah semua siswa di kelas ini sudah ada data absensi hari ini
-        $attendanceCount = \App\Models\Attendance::where('class_id', $kelas->id)
+        $attendanceCount = Attendance::where('class_id', $kelas->id)
             ->where('date', $today)
             ->count();
 
@@ -49,7 +49,7 @@ class AttendanceController extends Controller
         // Ambil siswa dari kelas user
         $studentIds = ClassStudent::where('class_id', $kelas->id)->pluck('student_id');
 
-        $topSakit = Attendance::select('student_id', \DB::raw('count(*) as jumlah'))
+        $topSakit = Attendance::select('student_id', DB::raw('count(*) as jumlah'))
             ->whereIn('student_id', $studentIds)
             ->where('status', 2)
             ->whereMonth('date', $month)
@@ -63,7 +63,7 @@ class AttendanceController extends Controller
                 'jumlah' => $item->jumlah
             ]);
 
-        $topIzin = Attendance::select('student_id', \DB::raw('count(*) as jumlah'))
+        $topIzin = Attendance::select('student_id', DB::raw('count(*) as jumlah'))
             ->whereIn('student_id', $studentIds)
             ->where('status', 3)
             ->whereMonth('date', $month)
@@ -77,7 +77,7 @@ class AttendanceController extends Controller
                 'jumlah' => $item->jumlah
             ]);
 
-        $topAlpa = Attendance::select('student_id', \DB::raw('count(*) as jumlah'))
+                $topAlpa = Attendance::select('student_id', DB::raw('count(*) as jumlah'))
             ->whereIn('student_id', $studentIds)
             ->where('status', 4)
             ->whereMonth('date', $month)
@@ -136,7 +136,7 @@ class AttendanceController extends Controller
             };
 
             if ($statusCode) {
-                \App\Models\Attendance::create([
+                Attendance::create([
                     'student_id' => $studentId,
                     'class_id' => $classId,
                     'date' => $date,

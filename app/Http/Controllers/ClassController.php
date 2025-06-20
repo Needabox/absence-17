@@ -7,7 +7,7 @@ use App\Models\ClassStudent;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Http\Request;
-
+use App\Models\Role;
 class ClassController extends Controller
 {
     public function index()
@@ -18,7 +18,7 @@ class ClassController extends Controller
 
     public function create()
     {
-        $teachers = User::where('role_id', 2)->get();
+        $teachers = User::where('role_id', Role::GURU)->get();
         return view('admin.class.create', compact('teachers'));
     }
 
@@ -50,7 +50,7 @@ class ClassController extends Controller
     $class = Classes::findOrFail($id);
 
     // Ambil semua guru dengan role_id = 2
-    $teachers = User::where('role_id', 2)->get();
+    $teachers = User::where('role_id', Role::GURU)->get();
 
     // Ambil semua siswa yang sudah masuk ke kelas ini
     $classStudents = ClassStudent::with('student')->where('class_id', $id)->get();

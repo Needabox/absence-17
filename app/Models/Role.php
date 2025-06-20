@@ -15,4 +15,7 @@ class Role extends Model
         return $this->hasMany(User::class);
     }
 
+    public const ADMIN = 1;
+    public const GURU = 2;
+    public const KETUA_KELAS = 3;
 }

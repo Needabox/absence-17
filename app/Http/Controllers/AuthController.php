@@ -17,7 +17,7 @@ class AuthController extends Controller
                 return redirect()->route('users.index');
             } elseif ($user->role_id == Role::GURU) {
                 return redirect()->route('class.index');
-            } elseif ($user->role_id == 3) {
+            } elseif ($user->role_id == Role::KETUA_KELAS) {
                 return redirect()->route('absen.index');
             }
         }
@@ -35,17 +35,17 @@ class AuthController extends Controller
 
         if (Auth::guard('web')->attempt(['email' => $data['email'], 'password' => $data['password'], 'role_id' => '1'])) {
             $request->session()->regenerate();
-            return redirect()->intended('/users');
+            return redirect()->intended(route('users.index'));
         }
 
         if (Auth::guard('web')->attempt(['email' => $data['email'], 'password' => $data['password'], 'role_id' => '2'])) {
             $request->session()->regenerate();
-            return redirect()->intended('/class');
+            return redirect()->intended(route('class.index'));
         }
 
         if (Auth::guard('web')->attempt(['email' => $data['email'], 'password' => $data['password'], 'role_id' => '3'])) {
             $request->session()->regenerate();
-            return redirect()->intended('/absen');
+            return redirect()->intended(route('absen.index'));
         }
 
         return back()->with('loginError', 'Email or password is incorrect.');

@@ -14,20 +14,20 @@ class AuthMiddleware
      *
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
-    public function handle(Request $request, Closure $next, $role)
-    {
-        if (!Auth::check()) {
-            return redirect('/login');
-        }
-
-        $user = Auth::user();
-
-        // Kalau rolenya tidak sesuai, redirect ke halaman default atau forbidden
-        if ($user->role_id != $role) {
-            return redirect()->back();
-        }
-
-
-        return $next($request);
+    public function handle(Request $request, Closure $next, ...$roles)
+{
+    if (!Auth::check()) {
+        return redirect('/login');
     }
+
+    $user = Auth::user();
+
+    // Cek apakah user memiliki salah satu role yang diizinkan
+    if (!in_array($user->role_id, $roles)) {
+        abort(403);
+    }
+
+    return $next($request);
+}
+
 }

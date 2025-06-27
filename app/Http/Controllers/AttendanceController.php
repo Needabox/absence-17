@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+
 class AttendanceController extends Controller
 {
     /**
@@ -20,7 +21,7 @@ class AttendanceController extends Controller
         $userClass = UserClass::where('user_id', Auth::id())->first();
 
         if (!$userClass) {
-            return abort(403, 'User tidak terdaftar di kelas manapun');
+            return "ga ada siswa";
         }
 
         $kelas = $userClass->class;
@@ -77,7 +78,7 @@ class AttendanceController extends Controller
                 'jumlah' => $item->jumlah
             ]);
 
-                $topAlpa = Attendance::select('student_id', DB::raw('count(*) as jumlah'))
+        $topAlpa = Attendance::select('student_id', DB::raw('count(*) as jumlah'))
             ->whereIn('student_id', $studentIds)
             ->where('status', 4)
             ->whereMonth('date', $month)

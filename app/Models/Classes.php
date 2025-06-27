@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Classes extends Model
 {
@@ -29,6 +30,10 @@ class Classes extends Model
     public function attendances()
     {
         return $this->hasMany(Attendance::class, 'class_id');
+    }
+    public function major()
+    {
+        return $this->BelongsTo(Major::class);
     }
 
    

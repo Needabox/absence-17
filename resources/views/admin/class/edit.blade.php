@@ -26,6 +26,19 @@
                         class="w-full p-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500" />
                 </div>
 
+                 <div>
+                    <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Major</label>
+                    <select name="major_id" required
+                        class="w-full p-2.5 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:ring-blue-500 focus:border-blue-500">
+                        <option value="">Select Major</option>
+                        @foreach($majors as $major)
+                        <option value="{{ $major->id }}" {{ old('major_id', $class->major_id) == $major->id ? 'selected' : '' }}>
+                            {{ $major->name }}
+                        </option>
+                        @endforeach
+                    </select>
+                </div>
+
                 <div>
                     <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Homeroom Teacher</label>
                     <select name="homeroom_teacher_id" required
@@ -82,10 +95,17 @@
     <div class="p-4 bg-white dark:bg-gray-900 mt-8 border border-gray-200 dark:border-gray-700 rounded-lg">
         <div class="flex items-center justify-between mb-4">
             <h2 class="text-2xl font-semibold text-gray-900 dark:text-white">Students</h2>
-            <button type="button" data-modal-target="crud-modal" data-modal-toggle="crud-modal"
+            <div class="gap-5">
+             <button type="button" data-modal-target="import-form" data-modal-toggle="import-form"
+                class="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 font-bold rounded">
+                import
+            </button>
+             <button type="button" data-modal-target="crud-modal" data-modal-toggle="crud-modal"
                 class="bg-blue-500 hover:bg-blue-700 text-white px-4 py-2 font-bold rounded">
                 Add Student
             </button>
+            </div>
+          
         </div>
 
         <div class="p-4 border border-gray-200 rounded-lg dark:border-gray-700 dark:bg-gray-900 bg-white mt-3">
@@ -130,12 +150,33 @@
                     @endforeach
                 </tbody>
             </table>
-
-
         </div>
     </div>
-
 </div>
+
+<div id="import-form" tabindex="-1" aria-hidden="true"
+    class="hidden fixed inset-0 z-50 overflow-y-auto flex items-center justify-center bg-black/50">
+    <div class="bg-white dark:bg-gray-700 rounded-lg shadow-lg w-full max-w-md p-6">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Import Students</h3>
+
+       <form action="{{ route('import.student-class') }}" method="POST" enctype="multipart/form-data">
+    @csrf
+
+    <input type="hidden" name="major_id" value="{{ old('major_id', $class->major_id) }}">
+    <input type="hidden" name="class_id" value="{{ old('class_id', $class->id) }}">
+
+    <input type="file" name="file" required class="block w-full">
+    
+    <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 mt-2 rounded">
+        Import
+    </button>
+</form>
+
+
+    </div>
+</div>
+
+
 
 <div id="crud-modal" tabindex="-1" aria-hidden="true"
     class="hidden fixed inset-0 z-50 overflow-y-auto flex items-center justify-center bg-black/50">

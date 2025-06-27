@@ -15,6 +15,7 @@ return new class extends Migration {
             $table->string('name');
             $table->unsignedBigInteger('homeroom_teacher_id')->nullable();
             $table->foreign('homeroom_teacher_id')->references('id')->on('users')->onDelete('set null');
+            $table->foreignId('major_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

@@ -11,7 +11,6 @@ class AuthController extends Controller
     public function login()
     {
         if (Auth::check()) {
-            // Sudah login, arahkan sesuai role
             $user = Auth::user();
             if ($user->role_id == Role::ADMIN) {
                 return redirect()->route('users.index');
@@ -35,17 +34,17 @@ class AuthController extends Controller
 
         if (Auth::guard('web')->attempt(['email' => $data['email'], 'password' => $data['password'], 'role_id' => '1'])) {
             $request->session()->regenerate();
-            return redirect()->intended(route('users.index'));
+            return redirect()->route('users.index');
         }
 
         if (Auth::guard('web')->attempt(['email' => $data['email'], 'password' => $data['password'], 'role_id' => '2'])) {
             $request->session()->regenerate();
-            return redirect()->intended(route('class.index'));
+            return redirect()->route('class.index');
         }
 
         if (Auth::guard('web')->attempt(['email' => $data['email'], 'password' => $data['password'], 'role_id' => '3'])) {
             $request->session()->regenerate();
-            return redirect()->intended(route('absen.index'));
+            return redirect()->route('absen.index');
         }
 
         return back()->with('loginError', 'Email or password is incorrect.');

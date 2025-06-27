@@ -79,28 +79,49 @@ class UsersController extends Controller
     {
         $user = User::find($id);
         $roles = Role::all();
-        return view('admin.users.edit', compact('user', 'roles'));
+        $class = Classes::all();
+        return view('admin.users.edit', compact('user', 'roles', 'class'));
     }
 
     /**
      * Update the specified resource in storage.
      */
     public function update(Request $request, string $id)
-    {
-        $request->validate([
-            'name' => 'required',
-            'email' => 'required|email|unique:users,email,' . $id,
-            'role_id' => 'required',
-        ]);
+{
+    $request->validate([
+        'name' => 'required',
+        'email' => 'required|email|unique:users,email,' . $id,
+        'role_id' => 'required',
+        'password' => 'nullable|min:8',
+        'class_id' => 'nullable',
+    ]);
 
-        $user = User::find($id);
-        $user->name = $request->name;
-        $user->email = $request->email;
-        $user->role_id = $request->role_id;
-        $user->save();
+    $user = User::findOrFail($id);
+    $user->name = $request->name;
+    $user->email = $request->email;
+    $user->role_id = $request->role_id;
 
-        return redirect()->route('users.index')->with('success', 'User updated successfully.');
+    // Update password hanya jika diisi
+    if ($request->filled('password')) {
+        $user->password = bcrypt($request->password);
     }
+
+    $user->save();
+
+    // Cek apakah user ini sudah punya data UserClass
+    if ($request->class_id) {
+        \App\Models\UserClass::updateOrCreate(
+            ['user_id' => $user->id],
+            ['class_id' => $request->class_id]
+        );
+    } else {
+        // Jika tidak ada class_id, hapus relasi jika ada
+        \App\Models\UserClass::where('user_id', $user->id)->delete();
+    }
+
+    return redirect()->route('users.index')->with('success', 'User updated successfully.');
+}
+
 
     /**
      * Remove the specified resource from storage.

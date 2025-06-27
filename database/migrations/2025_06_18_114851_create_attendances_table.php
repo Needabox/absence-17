@@ -16,7 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('student_id');
             $table->unsignedBigInteger('class_id');
             $table->date('date');  // Tanggal absensi
-            $table->integer('status'); // 1 = Hadir, 2 = Sakit, 3 = Izin, 4 = Alpha
+            $table->integer('status');
             $table->foreign('student_id')->references('id')->on('students')->onDelete('cascade');
             $table->foreign('class_id')->references('id')->on('class')->onDelete('cascade');
             $table->timestamps();

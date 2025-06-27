@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\Classes;
 use App\Models\ClassStudent;
+use App\Models\Major;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Role;
+
 class ClassController extends Controller
 {
     public function index()
@@ -18,8 +20,9 @@ class ClassController extends Controller
 
     public function create()
     {
+        $majors = Major::all();
         $teachers = User::where('role_id', Role::GURU)->get();
-        return view('admin.class.create', compact('teachers'));
+        return view('admin.class.create', compact('teachers', 'majors'));
     }
 
     public function store(Request $request)
@@ -31,6 +34,7 @@ class ClassController extends Controller
             'year' => 'required|string|max:10',
             'class_chief' => 'required|string|max:255',
             'status' => 'required|in:0,1',
+            'major_id' => 'required'
         ]);
 
         Classes::create([
@@ -40,29 +44,33 @@ class ClassController extends Controller
             'year' => $request->year,
             'class_chief' => $request->class_chief,
             'status' => $request->status,
+            'major_id' => $request->major_id
         ]);
 
         return redirect()->route('class.index')->with('success', 'Class created successfully.');
     }
 
-  public function edit($id)
-{
-    $class = Classes::findOrFail($id);
+    public function edit($id)
+    {
+        $class = Classes::findOrFail($id);
 
-    // Ambil semua guru dengan role_id = 2
-    $teachers = User::where('role_id', Role::GURU)->get();
+        // Ambil semua guru dengan role_id = 2
+        $teachers = User::where('role_id', Role::GURU)->get();
 
-    // Ambil semua siswa yang sudah masuk ke kelas ini
-    $classStudents = ClassStudent::with('student')->where('class_id', $id)->get();
+        // Ambil semua siswa yang sudah masuk ke kelas ini
+        $classStudents = ClassStudent::with('student')->where('class_id', $id)->get();
 
-    // Ambil semua student_id yang sudah punya kelas (class_student)
-    $studentWithClass = ClassStudent::pluck('student_id');
+        // Ambil semua student_id yang sudah punya kelas (class_student)
+        $studentWithClass = ClassStudent::pluck('student_id');
 
-    // Ambil siswa yang belum punya kelas
-    $students = Student::whereNotIn('id', $studentWithClass)->get();
+        // Ambil siswa yang belum punya kelas
+        $students = Student::whereNotIn('id', $studentWithClass)->get();
 
-    return view('admin.class.edit', compact('class', 'teachers', 'classStudents', 'students'));
-}
+        $majors = Major::all();
+
+
+        return view('admin.class.edit', compact('class', 'teachers', 'classStudents', 'students', 'majors'));
+    }
 
 
 
@@ -75,6 +83,7 @@ class ClassController extends Controller
             'year' => 'required|string|max:10',
             'class_chief' => 'required|string|max:255',
             'status' => 'required|in:0,1',
+            'major_id' => 'required'
         ]);
 
         $class = Classes::findOrFail($id);
@@ -85,6 +94,7 @@ class ClassController extends Controller
             'year' => $request->year,
             'class_chief' => $request->class_chief,
             'status' => $request->status,
+            'major_id' => $request->major_id,
         ]);
 
         return redirect()->route('class.index')->with('success', 'Class updated successfully.');

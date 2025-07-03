@@ -30,6 +30,7 @@ Route::prefix('cms')->group(function () {
         Route::post('/class-student', [ClassStudentController::class, 'store'])->name('class-student.store');
         Route::delete('/class-student/{class}/{student}', [ClassStudentController::class, 'destroy'])->name('class-student.destroy');
         Route::post('/import-student-class', [ClassStudentController::class, 'import'])->name('import.student-class');
+        Route::get('/export-attendance', [AttendanceController::class, 'export'])->name('export.attendance');
     });
 
     // Guru Routes

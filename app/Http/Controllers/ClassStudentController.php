@@ -27,7 +27,7 @@ class ClassStudentController extends Controller
 
         return back()->with('success', 'Student added to class.');
     }
-    
+
  public function import(Request $request)
 {
     $request->validate([
@@ -36,19 +36,27 @@ class ClassStudentController extends Controller
         'class_id' => 'required|integer',
     ]);
 
-    $import = new \App\Imports\StudentImport($request->major_id, $request->class_id);
-    \Maatwebsite\Excel\Facades\Excel::import($import, $request->file('file'));
+    try {
+        $import = new StudentImport($request->major_id, $request->class_id);
+        Excel::import($import, $request->file('file'));
 
-    if (count($import->duplicates) > 0) {
-        return back()->with('success', 'Import selesai. Sebagian siswa sudah ada: ' . implode(', ', $import->duplicates));
+        return response()->json([
+            'message' => count($import->duplicates) > 0
+                ? 'Import selesai. Sebagian siswa sudah ada.'
+                : 'Import selesai tanpa duplikat.',
+            'duplicates' => $import->duplicates,
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Terjadi kesalahan saat import.',
+            'error' => $e->getMessage(),
+        ], 500);
     }
-
-    return back()->with('success', 'Import selesai tanpa duplikat.');
 }
 
 
 
-    
+
 
     public function destroy($classId, $studentId)
     {

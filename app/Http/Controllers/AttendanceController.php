@@ -10,6 +10,10 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Exports\AttendancesExport;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\AttendancesExportSingleSheet;
+
 
 class AttendanceController extends Controller
 {
@@ -103,6 +107,18 @@ class AttendanceController extends Controller
         // Belum absen, tampilkan form
         return view('user.index', compact('kelas', 'students'));
     }
+
+
+
+public function export(Request $request)
+{
+    $request->validate(['date' => 'required|date']);
+    
+    $filename = 'Absensi_smkn17jkt' . date('d_m_Y', strtotime($request->date)) . '.xlsx';
+    
+    return Excel::download(new AttendancesExport($request->date), $filename);
+}
+
 
 
 
